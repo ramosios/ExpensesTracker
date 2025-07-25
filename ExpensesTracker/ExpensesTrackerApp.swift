@@ -11,7 +11,20 @@ import SwiftUI
 struct ExpensesTrackerApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            TabView {
+                PhotoView()
+                    .tabItem {
+                        Label("Photo", systemImage: "photo.on.rectangle.angled")
+                    }
+                TrackerView()
+                    .tabItem {
+                        Label("Tracker", systemImage: "list.bullet")
+                    }
+                ProfileView()
+                    .tabItem {
+                        Label("Profile", systemImage: "person.crop.circle")
+                    }
+            }
         }
     }
 }

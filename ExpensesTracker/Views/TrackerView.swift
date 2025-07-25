@@ -1,13 +1,12 @@
 //
-//  ContentView.swift
+//  TrackerView.swift
 //  ExpensesTracker
 //
 //  Created by Jorge Ramos on 25/07/25.
 //
-
 import SwiftUI
 
-struct ContentView: View {
+struct TrackerView: View {
     var body: some View {
         VStack {
             Image(systemName: "globe")
@@ -20,5 +19,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    TrackerView()
 }
