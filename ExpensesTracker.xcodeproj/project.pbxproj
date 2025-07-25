@@ -29,9 +29,22 @@
 		C1D92B3B2E33F1B200D59050 /* ExpensesTrackerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ExpensesTrackerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		C1D92B632E3428B000D59050 /* Exceptions for "ExpensesTracker" folder in "ExpensesTracker" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = C1D92B202E33F1B100D59050 /* ExpensesTracker */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		C1D92B232E33F1B100D59050 /* ExpensesTracker */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				C1D92B632E3428B000D59050 /* Exceptions for "ExpensesTracker" folder in "ExpensesTracker" target */,
+			);
 			path = ExpensesTracker;
 			sourceTree = "<group>";
 		};
@@ -407,6 +420,7 @@
 				DEVELOPMENT_TEAM = 823685848T;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ExpensesTracker/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -436,6 +450,7 @@
 				DEVELOPMENT_TEAM = 823685848T;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ExpensesTracker/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
