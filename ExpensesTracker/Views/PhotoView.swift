@@ -11,6 +11,7 @@ struct PhotoView: View {
     @State private var selectedImage: UIImage?
     @State private var isImagePickerShowing = false
     @State private var sourceType: UIImagePickerController.SourceType = .photoLibrary
+    @State private var showImageSourceOptions = false
 
     // Expense form state
     @State private var description: String = ""
@@ -24,63 +25,111 @@ struct PhotoView: View {
 
     var body: some View {
         NavigationView {
-            VStack {
-                // Image selection section
-                VStack {
-                    if let image = selectedImage {
-                        Image(uiImage: image)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(maxHeight: 200)
-                            .padding(.vertical)
-                    } else {
-                        Image(systemName: "photo")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 100, height: 100)
-                            .foregroundColor(.gray)
-                            .padding()
-                    }
+            ScrollView {
+                VStack(spacing: 25) {
+                    // MARK: - Image Section
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 15)
+                            .fill(Color(.systemGray6))
+                            .frame(height: 250)
 
-                    HStack {
-                        Button("Take Photo") {
-                            self.sourceType = .camera
-                            self.isImagePickerShowing = true
-                        }
-                        .padding()
-                        .disabled(!UIImagePickerController.isSourceTypeAvailable(.camera))
-
-                        Button("Choose from Library") {
-                            self.sourceType = .photoLibrary
-                            self.isImagePickerShowing = true
-                        }
-                        .padding()
-                    }
-                }
-
-                // Expense details form
-                Form {
-                    Section(header: Text("Expense Details")) {
-                        TextField("Description", text: $description)
-                        TextField("Price", text: $price)
-                            .keyboardType(.decimalPad)
-                        Picker("Category", selection: $selectedCategory) {
-                            ForEach(Category.allCases) { category in
-                                Text(category.rawValue.capitalized).tag(category)
+                        if let image = selectedImage {
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(height: 250)
+                                .clipShape(RoundedRectangle(cornerRadius: 15))
+                        } else {
+                            VStack(spacing: 10) {
+                                Image(systemName: "camera.fill")
+                                    .font(.largeTitle)
+                                    .foregroundColor(.gray)
+                                Text("Tap to add a photo")
+                                    .font(.headline)
+                                    .foregroundColor(.gray)
                             }
                         }
-                        DatePicker("Date", selection: $date, displayedComponents: .date)
                     }
+                    .onTapGesture {
+                        self.showImageSourceOptions = true
+                    }
+                    .padding(.horizontal)
+
+                    // MARK: - Expense Details Form
+                    VStack(spacing: 20) {
+                        VStack(alignment: .leading) {
+                            Text("Description")
+                                .font(.headline)
+                            TextField("e.g., Coffee with friends", text: $description)
+                                .padding(12)
+                                .background(Color(.systemGray6))
+                                .cornerRadius(10)
+                        }
+
+                        VStack(alignment: .leading) {
+                            Text("Price")
+                                .font(.headline)
+                            TextField("0.00", text: $price)
+                                .keyboardType(.decimalPad)
+                                .padding(12)
+                                .background(Color(.systemGray6))
+                                .cornerRadius(10)
+                        }
+
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("Category")
+                                .font(.headline)
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 10) {
+                                    ForEach(Category.allCases) { category in
+                                        Text(category.rawValue.capitalized)
+                                            .font(.subheadline)
+                                            .padding(.vertical, 8)
+                                            .padding(.horizontal, 15)
+                                            .background(selectedCategory == category ? Color.accentColor : Color(.systemGray5))
+                                            .foregroundColor(selectedCategory == category ? .white : .primary)
+                                            .clipShape(Capsule())
+                                            .onTapGesture {
+                                                withAnimation(.spring()) {
+                                                    selectedCategory = category
+                                                }
+                                            }
+                                    }
+                                }
+                            }
+                        }
+
+                        DatePicker("Date", selection: $date, displayedComponents: .date)
+                            .padding(12)
+                            .background(Color(.systemGray6))
+                            .cornerRadius(10)
+                    }
+                    .padding(.horizontal)
                 }
+                .padding(.top)
             }
             .navigationTitle("New Expense")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Save", action: saveExpense)
+                        .fontWeight(.bold)
                 }
             }
             .sheet(isPresented: $isImagePickerShowing) {
                 ImagePicker(selectedImage: self.$selectedImage, sourceType: self.sourceType)
+            }
+            .actionSheet(isPresented: $showImageSourceOptions) {
+                ActionSheet(title: Text("Select Photo"), message: nil, buttons: [
+                    .default(Text("Take Photo")) {
+                        self.sourceType = .camera
+                        self.isImagePickerShowing = true
+                    },
+                    .default(Text("Choose from Library")) {
+                        self.sourceType = .photoLibrary
+                        self.isImagePickerShowing = true
+                    },
+                    .cancel()
+                ])
             }
             .alert(isPresented: $showAlert) {
                 Alert(title: Text("Incomplete Form"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
@@ -108,11 +157,7 @@ struct PhotoView: View {
             category: selectedCategory
         )
 
-        // For now, we just print the new expense.
-        // Later, you can add code here to save it to a database.
         print("Saved new expense: \(newExpense)")
-
-        // Reset the form
         resetForm()
     }
 
