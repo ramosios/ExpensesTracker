@@ -99,7 +99,7 @@ struct PhotoView: View {
                             }
                         }
 
-                        DatePicker("Date", selection: $date, displayedComponents: .date)
+                        DatePicker("Date", selection: $date)
                             .padding(12)
                             .background(Color(.systemGray6))
                             .cornerRadius(10)
