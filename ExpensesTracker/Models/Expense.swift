@@ -20,8 +20,14 @@ struct Expense: Identifiable {
         self.category = category
     }
 }
+struct AiParseData: Codable {
+    let description: String
+    let price: Double
+    let date: Date
+    let category: Category
+}
 
-enum Category: String, CaseIterable, Identifiable {
+enum Category: String, CaseIterable, Identifiable, Codable {
     case food, groceries, shopping, entertainment, utilities, transportation, other
     var id: String { self.rawValue }
 }
