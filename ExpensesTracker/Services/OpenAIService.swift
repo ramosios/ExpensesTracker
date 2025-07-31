@@ -6,6 +6,14 @@
 //
 import Foundation
 
+enum OpenAIServiceError: Error {
+    case invalidRequest
+    case network(Error)
+    case invalidResponse
+    case decoding(Error)
+    case openAIError(String)
+}
+
 class OpenAIService {
     private let apiKey: String
 
@@ -29,7 +37,7 @@ class OpenAIService {
 
         guard let url = URL(string: "https://api.openai.com/v1/chat/completions"),
               let httpBody = try? JSONSerialization.data(withJSONObject: requestBody) else {
-            completion(.failure(NSError(domain: "InvalidRequest", code: 0)))
+            completion(.failure(OpenAIServiceError.invalidRequest))
             return
         }
 
@@ -39,20 +47,27 @@ class OpenAIService {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = httpBody
 
-        let task = URLSession.shared.dataTask(with: request) { data, _, error in
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
-                completion(.failure(error))
+                completion(.failure(OpenAIServiceError.network(error)))
                 return
             }
-            guard let data = data,
-                  let response = try? JSONDecoder().decode(OpenAIResponse.self, from: data),
-                  let content = response.choices.first?.message.content,
-                  let expenseData = content.data(using: .utf8),
-                  let aiParseData = try? JSONDecoder().decode(AiParseData.self, from: expenseData) else {
-                completion(.failure(NSError(domain: "ParsingError", code: 0)))
+            guard let data = data else {
+                completion(.failure(OpenAIServiceError.invalidResponse))
                 return
             }
-            completion(.success(aiParseData))
+            do {
+                let response = try JSONDecoder().decode(OpenAIResponse.self, from: data)
+                guard let content = response.choices.first?.message.content,
+                      let expenseData = content.data(using: .utf8) else {
+                    completion(.failure(OpenAIServiceError.invalidResponse))
+                    return
+                }
+                let aiParseData = try JSONDecoder().decode(AiParseData.self, from: expenseData)
+                completion(.success(aiParseData))
+            } catch let decodeError {
+                completion(.failure(OpenAIServiceError.decoding(decodeError)))
+            }
         }
         task.resume()
     }
