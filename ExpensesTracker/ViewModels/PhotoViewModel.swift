@@ -16,7 +16,6 @@ class PhotoViewModel: ObservableObject {
 
     private let ocrService: OCRService
     private let openAIService: OpenAIService
-
     init(ocrService: OCRService, openAIService: OpenAIService) {
         self.ocrService = ocrService
         self.openAIService = openAIService
